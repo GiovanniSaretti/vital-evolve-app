@@ -218,7 +218,7 @@ const Dashboard = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group opacity-60">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate("/meals")}>
             <div className="w-14 h-14 bg-gradient-to-br from-warning/20 to-warning/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Apple className="w-7 h-7 text-warning" />
             </div>
@@ -226,10 +226,9 @@ const Dashboard = () => {
             <p className="text-muted-foreground text-sm">
               Registre suas refeições e calorias
             </p>
-            <p className="text-xs text-primary mt-2">Em breve</p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group opacity-60">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate("/workouts")}>
             <div className="w-14 h-14 bg-gradient-to-br from-success/20 to-success/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Activity className="w-7 h-7 text-success" />
             </div>
@@ -237,10 +236,9 @@ const Dashboard = () => {
             <p className="text-muted-foreground text-sm">
               Registre seus treinos e exercícios
             </p>
-            <p className="text-xs text-primary mt-2">Em breve</p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group opacity-60">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate("/medications")}>
             <div className="w-14 h-14 bg-gradient-to-br from-destructive/20 to-destructive/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Syringe className="w-7 h-7 text-destructive" />
             </div>
@@ -248,10 +246,9 @@ const Dashboard = () => {
             <p className="text-muted-foreground text-sm">
               Controle suas aplicações e doses
             </p>
-            <p className="text-xs text-primary mt-2">Em breve</p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group opacity-60">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate("/mood")}>
             <div className="w-14 h-14 bg-gradient-to-br from-accent/20 to-accent/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Heart className="w-7 h-7 text-accent" />
             </div>
@@ -259,10 +256,9 @@ const Dashboard = () => {
             <p className="text-muted-foreground text-sm">
               Registre seu humor e disposição
             </p>
-            <p className="text-xs text-primary mt-2">Em breve</p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group opacity-60">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group" onClick={() => navigate("/measurements")}>
             <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-primary/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <TrendingUp className="w-7 h-7 text-primary" />
             </div>
@@ -270,7 +266,6 @@ const Dashboard = () => {
             <p className="text-muted-foreground text-sm">
               Acompanhe suas medidas e fotos de progresso
             </p>
-            <p className="text-xs text-primary mt-2">Em breve</p>
           </Card>
         </div>
 
