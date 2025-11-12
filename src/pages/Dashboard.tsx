@@ -121,7 +121,7 @@ const Dashboard = () => {
               <Dumbbell className="w-5 h-5 text-primary-foreground" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              AllFit
+              BioFit
             </h1>
           </div>
           <Button

@@ -15,7 +15,7 @@ const Index = () => {
               <Dumbbell className="w-12 h-12 text-primary-foreground" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
-              AllFit
+              BioFit
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-4">
               Seu parceiro completo na jornada de saúde e bem-estar

@@ -7,7 +7,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Camera, Ruler } from "lucide-react";
+import { ArrowLeft, Plus, Camera, Ruler, Trash2, Loader2, TrendingDown } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Measurements() {
   const navigate = useNavigate();
@@ -37,7 +49,7 @@ export default function Measurements() {
     const { data, error } = await supabase
       .from("measurements")
       .select("*")
-      .order("measurement_date", { ascending: false });
+      .order("measurement_date", { ascending: true });
 
     if (error) {
       toast.error("Erro ao carregar medidas");
@@ -125,39 +137,95 @@ export default function Measurements() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("measurements")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Medida excluída com sucesso");
+      fetchMeasurements();
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const chartData = measurements.map(m => ({
+    date: new Date(m.measurement_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+    peso: m.weight || null,
+    cintura: m.waist || null,
+    quadril: m.hip || null,
+    abdomen: m.abdomen || null,
+  })).filter(d => d.peso || d.cintura || d.quadril || d.abdomen);
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6">
+      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
-          className="mb-4"
+          className="mb-4 hover-scale"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-gradient-primary">
+        <div className="flex items-center gap-3 mb-6 animate-fade-in">
+          <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
             <Ruler className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Medidas & Evolução</h1>
-            <p className="text-sm text-muted-foreground">Acompanhe seu progresso</p>
+            <p className="text-sm text-muted-foreground">Acompanhe seu progresso com gráficos</p>
           </div>
         </div>
 
-        <Card className="card-elegant">
+        {chartData.length > 0 && (
+          <Card className="card-elegant animate-scale-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingDown className="w-5 h-5 text-primary" />
+                Evolução das Medidas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="date" className="text-xs" />
+                  <YAxis className="text-xs" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="peso" stroke="hsl(var(--primary))" strokeWidth={2} name="Peso (kg)" />
+                  <Line type="monotone" dataKey="cintura" stroke="hsl(var(--accent))" strokeWidth={2} name="Cintura (cm)" />
+                  <Line type="monotone" dataKey="quadril" stroke="hsl(var(--warning))" strokeWidth={2} name="Quadril (cm)" />
+                  <Line type="monotone" dataKey="abdomen" stroke="hsl(var(--destructive))" strokeWidth={2} name="Abdômen (cm)" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="card-elegant animate-scale-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5 text-primary" />
               Novas Medidas
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="measurement_date">Data</Label>
+                <Label htmlFor="measurement_date">Data *</Label>
                 <Input
                   id="measurement_date"
                   type="date"
@@ -167,9 +235,9 @@ export default function Measurements() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="weight">Peso (kg)</Label>
+                  <Label htmlFor="weight">⚖️ Peso (kg)</Label>
                   <Input
                     id="weight"
                     type="number"
@@ -181,7 +249,7 @@ export default function Measurements() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="waist">Cintura (cm)</Label>
+                  <Label htmlFor="waist">📏 Cintura (cm)</Label>
                   <Input
                     id="waist"
                     type="number"
@@ -193,7 +261,7 @@ export default function Measurements() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hip">Quadril (cm)</Label>
+                  <Label htmlFor="hip">📏 Quadril (cm)</Label>
                   <Input
                     id="hip"
                     type="number"
@@ -205,7 +273,7 @@ export default function Measurements() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="abdomen">Abdômen (cm)</Label>
+                  <Label htmlFor="abdomen">📏 Abdômen (cm)</Label>
                   <Input
                     id="abdomen"
                     type="number"
@@ -217,7 +285,7 @@ export default function Measurements() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="arm">Braço (cm)</Label>
+                  <Label htmlFor="arm">💪 Braço (cm)</Label>
                   <Input
                     id="arm"
                     type="number"
@@ -229,7 +297,7 @@ export default function Measurements() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="thigh">Coxa (cm)</Label>
+                  <Label htmlFor="thigh">🦵 Coxa (cm)</Label>
                   <Input
                     id="thigh"
                     type="number"
@@ -255,6 +323,7 @@ export default function Measurements() {
                     type="button"
                     variant="outline"
                     onClick={() => document.getElementById('photo')?.click()}
+                    className="hover-scale"
                   >
                     <Camera className="w-4 h-4 mr-2" />
                     Adicionar Foto
@@ -263,7 +332,7 @@ export default function Measurements() {
                     <img
                       src={photoPreview}
                       alt="Preview"
-                      className="h-20 w-20 object-cover rounded-lg"
+                      className="h-20 w-20 object-cover rounded-lg shadow-md animate-scale-in"
                     />
                   )}
                 </div>
@@ -276,66 +345,130 @@ export default function Measurements() {
                   placeholder="Como você está se sentindo com seu progresso?"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={2}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Salvando..." : "Registrar Medidas"}
+              <Button type="submit" className="w-full hover-scale" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  "Registrar Medidas"
+                )}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Histórico</h2>
+          <h2 className="text-xl font-semibold">Histórico de Medidas</h2>
           {measurements.length === 0 ? (
             <Card className="card-elegant">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Nenhuma medida registrada ainda
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Ruler className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Nenhuma medida registrada ainda</p>
               </CardContent>
             </Card>
           ) : (
-            measurements.map((measurement) => (
-              <Card key={measurement.id} className="card-elegant">
-                <CardContent className="pt-6">
-                  <div className="mb-3">
-                    <h3 className="font-semibold">
-                      {new Date(measurement.measurement_date).toLocaleDateString('pt-BR')}
-                    </h3>
-                  </div>
-                  {measurement.photo_url && (
-                    <img
-                      src={measurement.photo_url}
-                      alt="Progresso"
-                      className="w-full h-64 object-cover rounded-lg mb-3"
-                    />
-                  )}
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {measurement.weight && (
-                      <p><span className="font-medium">Peso:</span> {measurement.weight} kg</p>
+            <div className="grid gap-4">
+              {measurements.slice().reverse().map((measurement) => (
+                <Card key={measurement.id} className="card-elegant hover-scale">
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-semibold text-lg">
+                        {new Date(measurement.measurement_date).toLocaleDateString('pt-BR', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </h3>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir medida?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita. A medida será permanentemente removida.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(measurement.id)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                    {measurement.photo_url && (
+                      <img
+                        src={measurement.photo_url}
+                        alt="Progresso"
+                        className="w-full h-64 object-cover rounded-lg mb-3 shadow-md"
+                      />
                     )}
-                    {measurement.waist && (
-                      <p><span className="font-medium">Cintura:</span> {measurement.waist} cm</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                      {measurement.weight && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">⚖️ Peso:</span>
+                          <span className="font-bold ml-1">{measurement.weight} kg</span>
+                        </div>
+                      )}
+                      {measurement.waist && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">📏 Cintura:</span>
+                          <span className="font-bold ml-1">{measurement.waist} cm</span>
+                        </div>
+                      )}
+                      {measurement.hip && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">📏 Quadril:</span>
+                          <span className="font-bold ml-1">{measurement.hip} cm</span>
+                        </div>
+                      )}
+                      {measurement.abdomen && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">📏 Abdômen:</span>
+                          <span className="font-bold ml-1">{measurement.abdomen} cm</span>
+                        </div>
+                      )}
+                      {measurement.arm && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">💪 Braço:</span>
+                          <span className="font-bold ml-1">{measurement.arm} cm</span>
+                        </div>
+                      )}
+                      {measurement.thigh && (
+                        <div className="bg-gradient-card p-2 rounded">
+                          <span className="text-muted-foreground">🦵 Coxa:</span>
+                          <span className="font-bold ml-1">{measurement.thigh} cm</span>
+                        </div>
+                      )}
+                    </div>
+                    {measurement.notes && (
+                      <p className="text-sm text-muted-foreground italic border-t pt-3 mt-3">
+                        💭 {measurement.notes}
+                      </p>
                     )}
-                    {measurement.hip && (
-                      <p><span className="font-medium">Quadril:</span> {measurement.hip} cm</p>
-                    )}
-                    {measurement.abdomen && (
-                      <p><span className="font-medium">Abdômen:</span> {measurement.abdomen} cm</p>
-                    )}
-                    {measurement.arm && (
-                      <p><span className="font-medium">Braço:</span> {measurement.arm} cm</p>
-                    )}
-                    {measurement.thigh && (
-                      <p><span className="font-medium">Coxa:</span> {measurement.thigh} cm</p>
-                    )}
-                  </div>
-                  {measurement.notes && (
-                    <p className="text-sm text-muted-foreground italic mt-2">{measurement.notes}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </div>

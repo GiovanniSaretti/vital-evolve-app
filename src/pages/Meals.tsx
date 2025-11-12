@@ -8,7 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Camera, Utensils } from "lucide-react";
+import { ArrowLeft, Plus, Camera, Utensils, Trash2, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Meals() {
   const navigate = useNavigate();
@@ -117,75 +128,94 @@ export default function Meals() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("meals")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Refeição excluída com sucesso");
+      fetchMeals();
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6">
+      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
-          className="mb-4"
+          className="mb-4 hover-scale"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-gradient-primary">
+        <div className="flex items-center gap-3 mb-6 animate-fade-in">
+          <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
             <Utensils className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Diário Alimentar</h1>
-            <p className="text-sm text-muted-foreground">Registre suas refeições</p>
+            <p className="text-sm text-muted-foreground">Registre suas refeições diárias</p>
           </div>
         </div>
 
-        <Card className="card-elegant">
+        <Card className="card-elegant animate-scale-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5 text-primary" />
               Nova Refeição
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="meal_type">Tipo de Refeição</Label>
-                <Select
-                  value={formData.meal_type}
-                  onValueChange={(value) => setFormData({ ...formData, meal_type: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Café da Manhã">☕ Café da Manhã</SelectItem>
-                    <SelectItem value="Almoço">🍽️ Almoço</SelectItem>
-                    <SelectItem value="Jantar">🌙 Jantar</SelectItem>
-                    <SelectItem value="Lanche">🍎 Lanche</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meal_type">Tipo de Refeição *</Label>
+                  <Select
+                    value={formData.meal_type}
+                    onValueChange={(value) => setFormData({ ...formData, meal_type: value })}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Café da Manhã">☕ Café da Manhã</SelectItem>
+                      <SelectItem value="Almoço">🍽️ Almoço</SelectItem>
+                      <SelectItem value="Jantar">🌙 Jantar</SelectItem>
+                      <SelectItem value="Lanche">🍎 Lanche</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meal_date">Data *</Label>
+                  <Input
+                    id="meal_date"
+                    type="date"
+                    value={formData.meal_date}
+                    onChange={(e) => setFormData({ ...formData, meal_date: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="meal_date">Data</Label>
-                <Input
-                  id="meal_date"
-                  type="date"
-                  value={formData.meal_date}
-                  onChange={(e) => setFormData({ ...formData, meal_date: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="food_items">Alimentos</Label>
+                <Label htmlFor="food_items">Alimentos *</Label>
                 <Textarea
                   id="food_items"
                   placeholder="Ex: Arroz integral, frango grelhado, salada..."
                   value={formData.food_items}
                   onChange={(e) => setFormData({ ...formData, food_items: e.target.value })}
                   required
+                  rows={3}
                 />
               </div>
 
@@ -214,6 +244,7 @@ export default function Meals() {
                     type="button"
                     variant="outline"
                     onClick={() => document.getElementById('photo')?.click()}
+                    className="hover-scale"
                   >
                     <Camera className="w-4 h-4 mr-2" />
                     Adicionar Foto
@@ -222,7 +253,7 @@ export default function Meals() {
                     <img
                       src={photoPreview}
                       alt="Preview"
-                      className="h-20 w-20 object-cover rounded-lg"
+                      className="h-20 w-20 object-cover rounded-lg shadow-md animate-scale-in"
                     />
                   )}
                 </div>
@@ -235,55 +266,103 @@ export default function Meals() {
                   placeholder="Como você se sentiu após a refeição?"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={2}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Salvando..." : "Registrar Refeição"}
+              <Button type="submit" className="w-full hover-scale" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  "Registrar Refeição"
+                )}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Histórico</h2>
+          <h2 className="text-xl font-semibold">Histórico de Refeições</h2>
           {meals.length === 0 ? (
             <Card className="card-elegant">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Nenhuma refeição registrada ainda
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Utensils className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Nenhuma refeição registrada ainda</p>
               </CardContent>
             </Card>
           ) : (
-            meals.map((meal) => (
-              <Card key={meal.id} className="card-elegant">
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-semibold">{meal.meal_type}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(meal.meal_date).toLocaleDateString('pt-BR')}
-                      </p>
+            <div className="grid gap-4">
+              {meals.map((meal) => (
+                <Card key={meal.id} className="card-elegant hover-scale">
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg">{meal.meal_type}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(meal.meal_date).toLocaleDateString('pt-BR', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {meal.calories && (
+                          <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                            {meal.calories} kcal
+                          </span>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir refeição?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta ação não pode ser desfeita. A refeição será permanentemente removida.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(meal.id)}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
-                    {meal.calories && (
-                      <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                        {meal.calories} kcal
-                      </span>
+                    {meal.photo_url && (
+                      <img
+                        src={meal.photo_url}
+                        alt="Refeição"
+                        className="w-full h-48 object-cover rounded-lg mb-3 shadow-md"
+                      />
                     )}
-                  </div>
-                  {meal.photo_url && (
-                    <img
-                      src={meal.photo_url}
-                      alt="Refeição"
-                      className="w-full h-48 object-cover rounded-lg mb-3"
-                    />
-                  )}
-                  <p className="text-sm mb-2">{meal.food_items}</p>
-                  {meal.notes && (
-                    <p className="text-sm text-muted-foreground italic">{meal.notes}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))
+                    <p className="text-sm mb-2 whitespace-pre-line">{meal.food_items}</p>
+                    {meal.notes && (
+                      <p className="text-sm text-muted-foreground italic border-t pt-3 mt-3">
+                        💭 {meal.notes}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </div>

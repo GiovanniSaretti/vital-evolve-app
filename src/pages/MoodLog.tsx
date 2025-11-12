@@ -7,7 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Heart } from "lucide-react";
+import { ArrowLeft, Plus, Heart, Trash2, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const moodEmojis = ["😢", "😕", "😐", "🙂", "😄"];
 
@@ -78,46 +89,62 @@ export default function MoodLog() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("mood_logs")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Registro excluído com sucesso");
+      fetchMoodLogs();
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6">
+      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
-          className="mb-4"
+          className="mb-4 hover-scale"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-gradient-primary">
+        <div className="flex items-center gap-3 mb-6 animate-fade-in">
+          <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Bem-estar</h1>
-            <p className="text-sm text-muted-foreground">Como você está se sentindo?</p>
+            <p className="text-sm text-muted-foreground">Como você está se sentindo hoje?</p>
           </div>
         </div>
 
-        <Card className="card-elegant">
+        <Card className="card-elegant animate-scale-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5 text-primary" />
               Novo Registro
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
-                <div>
-                  <Label>Como está seu humor hoje?</Label>
-                  <div className="flex items-center justify-between mt-3 mb-2">
+                <div className="bg-gradient-card p-4 rounded-lg">
+                  <Label className="text-base">Como está seu humor hoje?</Label>
+                  <div className="flex items-center justify-between mt-4 mb-2">
                     {moodEmojis.map((emoji, index) => (
                       <span
                         key={index}
-                        className={`text-3xl transition-transform ${
-                          formData.mood_score === index + 1 ? "scale-125" : "opacity-40"
+                        className={`text-4xl transition-all duration-300 ${
+                          formData.mood_score === index + 1 ? "scale-125" : "opacity-30 scale-90"
                         }`}
                       >
                         {emoji}
@@ -134,12 +161,12 @@ export default function MoodLog() {
                   />
                 </div>
 
-                <div>
-                  <Label>Nível de Energia</Label>
-                  <div className="flex items-center justify-between mt-3 mb-2">
-                    <span className="text-sm text-muted-foreground">Baixa</span>
-                    <span className="font-semibold text-primary">{formData.energy_level}</span>
-                    <span className="text-sm text-muted-foreground">Alta</span>
+                <div className="bg-gradient-card p-4 rounded-lg">
+                  <Label className="text-base">Nível de Energia</Label>
+                  <div className="flex items-center justify-between mt-4 mb-2">
+                    <span className="text-sm text-muted-foreground">🔋 Baixa</span>
+                    <span className="font-bold text-primary text-2xl">{formData.energy_level}</span>
+                    <span className="text-sm text-muted-foreground">⚡ Alta</span>
                   </div>
                   <Slider
                     value={[formData.energy_level]}
@@ -150,12 +177,12 @@ export default function MoodLog() {
                   />
                 </div>
 
-                <div>
-                  <Label>Nível de Motivação</Label>
-                  <div className="flex items-center justify-between mt-3 mb-2">
-                    <span className="text-sm text-muted-foreground">Baixa</span>
-                    <span className="font-semibold text-primary">{formData.motivation_level}</span>
-                    <span className="text-sm text-muted-foreground">Alta</span>
+                <div className="bg-gradient-card p-4 rounded-lg">
+                  <Label className="text-base">Nível de Motivação</Label>
+                  <div className="flex items-center justify-between mt-4 mb-2">
+                    <span className="text-sm text-muted-foreground">😔 Baixa</span>
+                    <span className="font-bold text-primary text-2xl">{formData.motivation_level}</span>
+                    <span className="text-sm text-muted-foreground">🚀 Alta</span>
                   </div>
                   <Slider
                     value={[formData.motivation_level]}
@@ -178,54 +205,99 @@ export default function MoodLog() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Salvando..." : "Salvar Registro"}
+              <Button type="submit" className="w-full hover-scale" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  "Salvar Registro"
+                )}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Histórico</h2>
+          <h2 className="text-xl font-semibold">Histórico de Bem-estar</h2>
           {moodLogs.length === 0 ? (
             <Card className="card-elegant">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Nenhum registro ainda
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Heart className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Nenhum registro ainda</p>
               </CardContent>
             </Card>
           ) : (
-            moodLogs.map((log) => (
-              <Card key={log.id} className="card-elegant">
-                <CardContent className="pt-6">
-                  <div className="mb-3">
-                    <h3 className="font-semibold">
-                      {new Date(log.log_date).toLocaleDateString('pt-BR')}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="text-center">
-                      <span className="text-3xl">{moodEmojis[log.mood_score - 1]}</span>
-                      <p className="text-xs text-muted-foreground mt-1">Humor</p>
-                    </div>
-                    <div className="flex-1 space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Energia:</span>
-                        <span className="font-medium">{log.energy_level}/5</span>
+            <div className="grid gap-4">
+              {moodLogs.map((log) => (
+                <Card key={log.id} className="card-elegant hover-scale">
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {new Date(log.log_date).toLocaleDateString('pt-BR', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </h3>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Motivação:</span>
-                        <span className="font-medium">{log.motivation_level}/5</span>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir registro?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita. O registro será permanentemente removido.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(log.id)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                    <div className="flex items-start gap-4 mb-3">
+                      <div className="text-center flex-shrink-0">
+                        <span className="text-4xl">{moodEmojis[log.mood_score - 1]}</span>
+                        <p className="text-xs text-muted-foreground mt-1">Humor</p>
+                      </div>
+                      <div className="flex-1 grid grid-cols-2 gap-3 text-sm">
+                        <div className="bg-gradient-card p-3 rounded-lg">
+                          <p className="text-muted-foreground mb-1">⚡ Energia</p>
+                          <p className="font-bold text-lg text-primary">{log.energy_level}/5</p>
+                        </div>
+                        <div className="bg-gradient-card p-3 rounded-lg">
+                          <p className="text-muted-foreground mb-1">🚀 Motivação</p>
+                          <p className="font-bold text-lg text-primary">{log.motivation_level}/5</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {log.notes && (
-                    <p className="text-sm text-muted-foreground italic border-t pt-3">
-                      {log.notes}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))
+                    {log.notes && (
+                      <p className="text-sm text-muted-foreground italic border-t pt-3">
+                        💭 {log.notes}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </div>
