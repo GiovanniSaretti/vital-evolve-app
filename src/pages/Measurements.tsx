@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Camera, Ruler, Trash2, Loader2, TrendingDown } from "lucide-react";
+import { ArrowLeft, Plus, Camera, Activity, Trash2, Loader2, TrendingDown } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import {
   AlertDialog,
@@ -162,7 +162,7 @@ export default function Measurements() {
   })).filter(d => d.peso || d.cintura || d.quadril || d.abdomen);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
       <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
@@ -175,11 +175,11 @@ export default function Measurements() {
 
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
-            <Ruler className="w-6 h-6 text-white" />
+            <Activity className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Medidas & Evolução</h1>
-            <p className="text-sm text-muted-foreground">Acompanhe seu progresso com gráficos</p>
+            <p className="text-sm text-muted-foreground">Acompanhe seu progresso e evolução física</p>
           </div>
         </div>
 
@@ -368,7 +368,7 @@ export default function Measurements() {
           {measurements.length === 0 ? (
             <Card className="card-elegant">
               <CardContent className="py-12 text-center text-muted-foreground">
-                <Ruler className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhuma medida registrada ainda</p>
               </CardContent>
             </Card>

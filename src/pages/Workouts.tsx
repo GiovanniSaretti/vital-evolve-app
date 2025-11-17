@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Dumbbell, Trash2, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Dumbbell, Trash2, Loader2, TrendingUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function Workouts() {
   const navigate = useNavigate();
@@ -117,9 +118,17 @@ export default function Workouts() {
     }
   };
 
+  const chartData = workouts
+    .slice(0, 20)
+    .reverse()
+    .map(workout => ({
+      date: new Date(workout.workout_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      duração: workout.duration_minutes,
+    }));
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -131,13 +140,42 @@ export default function Workouts() {
 
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
-            <Dumbbell className="w-6 h-6 text-white" />
+            <Dumbbell className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Atividades Físicas</h1>
-            <p className="text-sm text-muted-foreground">Registre seus treinos e exercícios</p>
+            <p className="text-sm text-muted-foreground">Registre seus treinos e acompanhe sua evolução</p>
           </div>
         </div>
+
+        {chartData.length > 0 && (
+          <Card className="card-elegant animate-scale-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Duração dos Treinos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="duração" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="card-elegant animate-scale-in">
           <CardHeader>

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Pill, Trash2, Loader2, MapPin } from "lucide-react";
+import { ArrowLeft, Plus, Pill, Trash2, Loader2, MapPin, TrendingUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function Medications() {
   const navigate = useNavigate();
@@ -110,9 +111,17 @@ export default function Medications() {
     }
   };
 
+  const chartData = medications
+    .slice(0, 20)
+    .reverse()
+    .map(med => ({
+      date: new Date(med.application_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      dose: med.dose,
+    }));
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -124,13 +133,42 @@ export default function Medications() {
 
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
-            <Pill className="w-6 h-6 text-white" />
+            <Pill className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Medicamentos</h1>
-            <p className="text-sm text-muted-foreground">Registre suas aplicações e doses</p>
+            <p className="text-sm text-muted-foreground">Registre suas aplicações e acompanhe as doses</p>
           </div>
         </div>
+
+        {chartData.length > 0 && (
+          <Card className="card-elegant animate-scale-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Histórico de Doses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="dose" stroke="hsl(var(--accent))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="card-elegant animate-scale-in">
           <CardHeader>
