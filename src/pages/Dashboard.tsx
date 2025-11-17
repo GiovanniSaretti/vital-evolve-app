@@ -212,7 +212,7 @@ const Dashboard = () => {
             <div className="w-14 h-14 bg-gradient-to-br from-success/20 to-success/40 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Activity className="w-7 h-7 text-success" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Atividades Físicas</h3>
+            <h3 className="text-xl font-semibold mb-2">GYM WEIGHT</h3>
             <p className="text-muted-foreground text-sm">
               Registre seus treinos e exercícios
             </p>
