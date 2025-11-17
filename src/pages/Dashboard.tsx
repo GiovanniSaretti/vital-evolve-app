@@ -5,64 +5,50 @@ import { User, Session } from "@supabase/supabase-js";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  Dumbbell,
-  User as UserIcon,
-  Activity,
-  Apple,
-  Syringe,
-  Heart,
-  LogOut,
-  TrendingUp,
-} from "lucide-react";
-
+import { Dumbbell, User as UserIcon, Activity, Apple, Syringe, Heart, LogOut, TrendingUp } from "lucide-react";
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session) {
-          navigate("/auth");
-        }
+    const {
+      data: {
+        subscription
       }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
       if (!session) {
         navigate("/auth");
       }
     });
-
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (!session) {
+        navigate("/auth");
+      }
+    });
     return () => subscription.unsubscribe();
   }, [navigate]);
-
   useEffect(() => {
     if (user) {
       loadProfile();
     }
   }, [user]);
-
   const loadProfile = async () => {
     if (!user) return;
-
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
+      const {
+        data,
+        error
+      } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       if (error) throw error;
       setProfile(data);
     } catch (error: any) {
@@ -71,7 +57,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -81,7 +66,6 @@ const Dashboard = () => {
       toast.error("Erro ao sair");
     }
   };
-
   const calculateIMC = () => {
     if (profile?.current_weight && profile?.height) {
       const heightInMeters = profile.height / 100;
@@ -89,30 +73,35 @@ const Dashboard = () => {
     }
     return null;
   };
-
   const getIMCStatus = (imc: number) => {
-    if (imc < 18.5) return { text: "Abaixo do peso", color: "text-warning" };
-    if (imc < 25) return { text: "Peso ideal", color: "text-success" };
-    if (imc < 30) return { text: "Sobrepeso", color: "text-warning" };
-    return { text: "Obesidade", color: "text-destructive" };
+    if (imc < 18.5) return {
+      text: "Abaixo do peso",
+      color: "text-warning"
+    };
+    if (imc < 25) return {
+      text: "Peso ideal",
+      color: "text-success"
+    };
+    if (imc < 30) return {
+      text: "Sobrepeso",
+      color: "text-warning"
+    };
+    return {
+      text: "Obesidade",
+      color: "text-destructive"
+    };
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="text-center">
           <Dumbbell className="w-12 h-12 text-primary animate-pulse mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   const imc = calculateIMC();
   const imcStatus = imc ? getIMCStatus(parseFloat(imc)) : null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
+  return <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
       {/* Header */}
       <header className="bg-card border-b border-border sticky top-0 z-10 backdrop-blur-sm bg-card/95">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -121,15 +110,10 @@ const Dashboard = () => {
               <Dumbbell className="w-5 h-5 text-primary-foreground" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              BioFit
+              BioLife
             </h1>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            className="hover:bg-destructive/10 hover:text-destructive"
-          >
+          <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive">
             <LogOut className="w-5 h-5" />
           </Button>
         </div>
@@ -169,14 +153,10 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">IMC</p>
-                {imc ? (
-                  <div>
+                {imc ? <div>
                     <p className="text-2xl font-bold">{imc}</p>
                     <p className={`text-xs ${imcStatus?.color}`}>{imcStatus?.text}</p>
-                  </div>
-                ) : (
-                  <p className="text-2xl font-bold">--</p>
-                )}
+                  </div> : <p className="text-2xl font-bold">--</p>}
               </div>
             </div>
           </Card>
@@ -276,8 +256,6 @@ const Dashboard = () => {
           </p>
         </Card>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
