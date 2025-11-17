@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Heart, Trash2, Loader2, TrendingUp } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { ArrowLeft, Plus, Heart, Trash2, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -106,20 +105,9 @@ export default function MoodLog() {
     }
   };
 
-  // Prepare chart data
-  const chartData = moodLogs
-    .slice(0, 30)
-    .reverse()
-    .map(log => ({
-      date: new Date(log.log_date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
-      humor: log.mood_score,
-      energia: log.energy_level,
-      motivação: log.motivation_level,
-    }));
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -139,71 +127,9 @@ export default function MoodLog() {
           </div>
         </div>
 
-        {/* Chart */}
-        {chartData.length > 0 && (
-          <Card className="shadow-md animate-fade-in bg-gradient-card border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-foreground">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Evolução do Bem-estar
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis 
-                    dataKey="date" 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <YAxis 
-                    domain={[1, 5]}
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--foreground))'
-                    }}
-                  />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="humor" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--primary))', r: 4 }}
-                    name="Humor"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="energia" 
-                    stroke="hsl(var(--accent))" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--accent))', r: 4 }}
-                    name="Energia"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="motivação" 
-                    stroke="hsl(var(--warning))" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--warning))', r: 4 }}
-                    name="Motivação"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card className="shadow-md animate-fade-in bg-gradient-card border-border/50">
+        <Card className="card-elegant animate-scale-in">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
+            <CardTitle className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-primary" />
               Novo Registro
             </CardTitle>
@@ -294,12 +220,9 @@ export default function MoodLog() {
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-foreground">
-            <Heart className="w-5 h-5 text-primary" />
-            Histórico de Bem-estar
-          </h2>
+          <h2 className="text-xl font-semibold">Histórico de Bem-estar</h2>
           {moodLogs.length === 0 ? (
-            <Card className="bg-gradient-card border-border/50">
+            <Card className="card-elegant">
               <CardContent className="py-12 text-center text-muted-foreground">
                 <Heart className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum registro ainda</p>
@@ -308,7 +231,7 @@ export default function MoodLog() {
           ) : (
             <div className="grid gap-4">
               {moodLogs.map((log) => (
-                <Card key={log.id} className="shadow-sm hover:shadow-md transition-all hover-scale bg-gradient-card border-border/50">
+                <Card key={log.id} className="card-elegant hover-scale">
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>

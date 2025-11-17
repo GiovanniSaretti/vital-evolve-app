@@ -8,8 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Pill, Trash2, Loader2, MapPin, TrendingUp } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { ArrowLeft, Plus, Pill, Trash2, Loader2, MapPin } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -111,18 +110,9 @@ export default function Medications() {
     }
   };
 
-  // Prepare chart data
-  const chartData = medications
-    .slice(0, 30)
-    .reverse()
-    .map(med => ({
-      date: new Date(med.application_date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
-      dose: med.dose,
-    }));
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -142,55 +132,9 @@ export default function Medications() {
           </div>
         </div>
 
-        {/* Chart */}
-        {chartData.length > 0 && (
-          <Card className="shadow-md animate-fade-in bg-gradient-card border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-foreground">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Histórico de Doses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis 
-                    dataKey="date" 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <YAxis 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--foreground))'
-                    }}
-                  />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="dose" 
-                    stroke="hsl(var(--accent))" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--accent))', r: 4 }}
-                    activeDot={{ r: 6 }}
-                    name="Dose (mg)"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card className="shadow-md animate-fade-in bg-gradient-card border-border/50">
+        <Card className="card-elegant animate-scale-in">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
+            <CardTitle className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-primary" />
               Nova Aplicação
             </CardTitle>
@@ -311,12 +255,9 @@ export default function Medications() {
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-foreground">
-            <Pill className="w-5 h-5 text-primary" />
-            Histórico de Aplicações
-          </h2>
+          <h2 className="text-xl font-semibold">Histórico de Aplicações</h2>
           {medications.length === 0 ? (
-            <Card className="bg-gradient-card border-border/50">
+            <Card className="card-elegant">
               <CardContent className="py-12 text-center text-muted-foreground">
                 <Pill className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhuma aplicação registrada ainda</p>
@@ -325,7 +266,7 @@ export default function Medications() {
           ) : (
             <div className="grid gap-4">
               {medications.map((medication) => (
-                <Card key={medication.id} className="shadow-sm hover:shadow-md transition-all hover-scale bg-gradient-card border-border/50">
+                <Card key={medication.id} className="card-elegant hover-scale">
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-start mb-3">
                       <div>
