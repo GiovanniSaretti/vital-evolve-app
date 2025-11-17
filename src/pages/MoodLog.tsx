@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Heart, Trash2, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Heart, Trash2, Loader2, TrendingUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const moodEmojis = ["😢", "😕", "😐", "🙂", "😄"];
 
@@ -105,9 +106,19 @@ export default function MoodLog() {
     }
   };
 
+  const chartData = moodLogs
+    .slice(0, 20)
+    .reverse()
+    .map(log => ({
+      date: new Date(log.log_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      humor: log.mood_score,
+      energia: log.energy_level,
+      motivação: log.motivation_level,
+    }));
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto p-4 space-y-6 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <div className="container max-w-6xl mx-auto p-4 space-y-6 pb-20">
         <Button
           variant="ghost"
           onClick={() => navigate("/dashboard")}
@@ -119,13 +130,44 @@ export default function MoodLog() {
 
         <div className="flex items-center gap-3 mb-6 animate-fade-in">
           <div className="p-3 rounded-xl bg-gradient-primary shadow-glow">
-            <Heart className="w-6 h-6 text-white" />
+            <Heart className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Bem-estar</h1>
             <p className="text-sm text-muted-foreground">Como você está se sentindo hoje?</p>
           </div>
         </div>
+
+        {chartData.length > 0 && (
+          <Card className="card-elegant animate-scale-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Evolução do Bem-estar
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis stroke="hsl(var(--muted-foreground))" domain={[1, 5]} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="humor" stroke="hsl(var(--primary))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="energia" stroke="hsl(var(--accent))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="motivação" stroke="hsl(var(--warning))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="card-elegant animate-scale-in">
           <CardHeader>
