@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Dumbbell, Mail, Lock, User } from "lucide-react";
+import { Dumbbell, Mail, Lock, User, Stethoscope } from "lucide-react";
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ const Auth = () => {
         });
         if (error) throw error;
         if (data.user) {
-          toast.success("Conta criada com sucesso! Bem-vindo ao AllFit!");
+          toast.success("Conta criada com sucesso! Bem-vindo ao BioFit!");
           navigate("/dashboard");
         }
       }
@@ -64,7 +64,7 @@ const Auth = () => {
             <Dumbbell className="w-8 h-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            BioLife
+            BioFit
           </h1>
           <p className="text-muted-foreground mt-2 text-center">
             Seu parceiro na jornada de saúde e bem-estar
@@ -106,7 +106,26 @@ const Auth = () => {
             </button>
           </div>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Ou
+            </span>
+          </div>
+        </div>
+
+        <Link to="/professional-register">
+          <Button type="button" variant="outline" className="w-full gap-2">
+            <Stethoscope className="h-4 w-4" />
+            Sou um Profissional da Saúde
+          </Button>
+        </Link>
       </Card>
-    </div>;
+    </div>
+  );
 };
 export default Auth;

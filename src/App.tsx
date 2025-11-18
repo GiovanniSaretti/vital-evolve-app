@@ -12,6 +12,8 @@ import Workouts from "./pages/Workouts";
 import Medications from "./pages/Medications";
 import Measurements from "./pages/Measurements";
 import MoodLog from "./pages/MoodLog";
+import ProfessionalRegister from "./pages/ProfessionalRegister";
+import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/medications" element={<Medications />} />
           <Route path="/measurements" element={<Measurements />} />
           <Route path="/mood" element={<MoodLog />} />
+          <Route path="/professional-register" element={<ProfessionalRegister />} />
+          <Route path="/professional-dashboard" element={<ProfessionalDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
