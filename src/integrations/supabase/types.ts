@@ -14,6 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
+      exams: {
+        Row: {
+          created_at: string | null
+          exam_date: string
+          exam_type: string
+          file_url: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          professional_analysis: string | null
+          professional_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          exam_date: string
+          exam_type: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          professional_analysis?: string | null
+          professional_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          exam_date?: string
+          exam_type?: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          professional_analysis?: string | null
+          professional_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exams_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "health_professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_professionals: {
+        Row: {
+          attendance_mode: Database["public"]["Enums"]["attendance_mode"] | null
+          avatar_url: string | null
+          birthdate: string | null
+          clinic_address: string | null
+          clinic_hours: string | null
+          clinic_name: string | null
+          cpf: string | null
+          created_at: string | null
+          document_url: string | null
+          email: string
+          experience_years: number | null
+          full_name: string
+          gender: string | null
+          id: string
+          license_number: string
+          license_state: string
+          phone: string | null
+          profession: Database["public"]["Enums"]["profession_type"]
+          selfie_url: string | null
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          attendance_mode?:
+            | Database["public"]["Enums"]["attendance_mode"]
+            | null
+          avatar_url?: string | null
+          birthdate?: string | null
+          clinic_address?: string | null
+          clinic_hours?: string | null
+          clinic_name?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          email: string
+          experience_years?: number | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          license_number: string
+          license_state: string
+          phone?: string | null
+          profession: Database["public"]["Enums"]["profession_type"]
+          selfie_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          attendance_mode?:
+            | Database["public"]["Enums"]["attendance_mode"]
+            | null
+          avatar_url?: string | null
+          birthdate?: string | null
+          clinic_address?: string | null
+          clinic_hours?: string | null
+          clinic_name?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          email?: string
+          experience_years?: number | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          license_number?: string
+          license_state?: string
+          phone?: string | null
+          profession?: Database["public"]["Enums"]["profession_type"]
+          selfie_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           calories: number | null
@@ -199,6 +328,100 @@ export type Database = {
           },
         ]
       }
+      prescriptions: {
+        Row: {
+          active: boolean | null
+          content: Json | null
+          created_at: string | null
+          description: string | null
+          duration_days: number | null
+          id: string
+          objective: string | null
+          patient_id: string
+          pdf_url: string | null
+          professional_id: string
+          rules: string | null
+          title: string
+          type: Database["public"]["Enums"]["prescription_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          duration_days?: number | null
+          id?: string
+          objective?: string | null
+          patient_id: string
+          pdf_url?: string | null
+          professional_id: string
+          rules?: string | null
+          title: string
+          type: Database["public"]["Enums"]["prescription_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          duration_days?: number | null
+          id?: string
+          objective?: string | null
+          patient_id?: string
+          pdf_url?: string | null
+          professional_id?: string
+          rules?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["prescription_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "health_professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_patients: {
+        Row: {
+          created_at: string | null
+          id: string
+          patient_id: string
+          professional_id: string
+          status: Database["public"]["Enums"]["patient_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          patient_id: string
+          professional_id: string
+          status?: Database["public"]["Enums"]["patient_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          patient_id?: string
+          professional_id?: string
+          status?: Database["public"]["Enums"]["patient_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_patients_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "health_professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           activity_level: number | null
@@ -244,6 +467,27 @@ export type Database = {
           initial_weight?: number | null
           treatment_start_date?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -296,10 +540,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "patient" | "professional" | "admin"
+      attendance_mode: "presencial" | "online" | "hibrido"
+      patient_status: "pending" | "active" | "rejected" | "inactive"
+      prescription_type:
+        | "plano_alimentar"
+        | "plano_treino"
+        | "fisioterapia"
+        | "reabilitacao_cardiaca"
+        | "plano_comportamental"
+        | "plano_geral"
+      profession_type:
+        | "nutricionista"
+        | "fisioterapeuta"
+        | "educador_fisico"
+        | "cardiologista"
+        | "endocrinologista"
+        | "clinico_geral"
+        | "psicologo"
+        | "nefrologista"
+        | "ortopedista"
+        | "personal_trainer"
+        | "outro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -426,6 +697,31 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["patient", "professional", "admin"],
+      attendance_mode: ["presencial", "online", "hibrido"],
+      patient_status: ["pending", "active", "rejected", "inactive"],
+      prescription_type: [
+        "plano_alimentar",
+        "plano_treino",
+        "fisioterapia",
+        "reabilitacao_cardiaca",
+        "plano_comportamental",
+        "plano_geral",
+      ],
+      profession_type: [
+        "nutricionista",
+        "fisioterapeuta",
+        "educador_fisico",
+        "cardiologista",
+        "endocrinologista",
+        "clinico_geral",
+        "psicologo",
+        "nefrologista",
+        "ortopedista",
+        "personal_trainer",
+        "outro",
+      ],
+    },
   },
 } as const
