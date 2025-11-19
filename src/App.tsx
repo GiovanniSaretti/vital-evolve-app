@@ -14,6 +14,9 @@ import Measurements from "./pages/Measurements";
 import MoodLog from "./pages/MoodLog";
 import ProfessionalRegister from "./pages/ProfessionalRegister";
 import ProfessionalDashboard from "./pages/ProfessionalDashboard";
+import Patients from "./pages/Patients";
+import PatientDetails from "./pages/PatientDetails";
+import CreatePrescription from "./pages/CreatePrescription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/mood" element={<MoodLog />} />
           <Route path="/professional-register" element={<ProfessionalRegister />} />
           <Route path="/professional-dashboard" element={<ProfessionalDashboard />} />
+          <Route path="/patients" element={<Patients />} />
+          <Route path="/patient/:patientId" element={<PatientDetails />} />
+          <Route path="/patient/:patientId/prescribe" element={<CreatePrescription />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
