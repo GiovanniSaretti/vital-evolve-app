@@ -200,7 +200,10 @@ export default function ProfessionalDashboard() {
 
         {/* Main Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="card-elegant hover-scale cursor-pointer">
+          <Card
+            className="card-elegant hover-scale cursor-pointer"
+            onClick={() => navigate("/patients")}
+          >
             <CardHeader>
               <Users className="h-8 w-8 text-primary mb-2" />
               <CardTitle>Meus Pacientes</CardTitle>
