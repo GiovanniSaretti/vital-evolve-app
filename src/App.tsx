@@ -17,6 +17,8 @@ import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import Patients from "./pages/Patients";
 import PatientDetails from "./pages/PatientDetails";
 import CreatePrescription from "./pages/CreatePrescription";
+import Appointments from "./pages/Appointments";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/patients" element={<Patients />} />
           <Route path="/patient/:patientId" element={<PatientDetails />} />
           <Route path="/patient/:patientId/prescribe" element={<CreatePrescription />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/messages" element={<Messages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import RecentActivitiesWidget from "@/components/professional/RecentActivitiesWidget";
+import UpcomingAppointmentsWidget from "@/components/professional/UpcomingAppointmentsWidget";
+import PrescriptionRenewalsWidget from "@/components/professional/PrescriptionRenewalsWidget";
 import { 
   Users, 
   ClipboardList, 
@@ -216,7 +219,10 @@ export default function ProfessionalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elegant hover-scale cursor-pointer">
+          <Card
+            className="card-elegant hover-scale cursor-pointer"
+            onClick={() => navigate("/appointments")}
+          >
             <CardHeader>
               <ClipboardList className="h-8 w-8 text-warning mb-2" />
               <CardTitle>Solicitações</CardTitle>
@@ -255,7 +261,10 @@ export default function ProfessionalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elegant hover-scale cursor-pointer">
+          <Card
+            className="card-elegant hover-scale cursor-pointer"
+            onClick={() => navigate("/messages")}
+          >
             <CardHeader>
               <MessageSquare className="h-8 w-8 text-primary mb-2" />
               <CardTitle>Chat com Pacientes</CardTitle>
@@ -268,7 +277,7 @@ export default function ProfessionalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elegant hover-scale cursor-pointer">
+            <Card className="card-elegant hover-scale cursor-pointer">
             <CardHeader>
               <Calendar className="h-8 w-8 text-success mb-2" />
               <CardTitle>Agenda</CardTitle>
@@ -277,9 +286,20 @@ export default function ProfessionalDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" variant="outline">Ver Agenda</Button>
+              <Button className="w-full" variant="outline" onClick={() => navigate("/appointments")}>Ver Agenda</Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Dashboard Widgets */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          {professional && (
+            <>
+              <RecentActivitiesWidget professionalId={professional.id} />
+              <UpcomingAppointmentsWidget professionalId={professional.id} />
+              <PrescriptionRenewalsWidget professionalId={professional.id} />
+            </>
+          )}
         </div>
 
         {/* Professional Info */}
